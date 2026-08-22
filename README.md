@@ -1,6 +1,14 @@
 # Nivela — Budget for Irregular Income
 
-Transform financial uncertainty into a stable salary.
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Recharts](https://img.shields.io/badge/Recharts-FF7300?style=for-the-badge&logo=react&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
+
+> Transform financial uncertainty into a stable salary.
 
 ## The Problem
 Traditional personal finance apps assume a fixed monthly salary. As a freelancer or self-employed individual, you don't know how much you'll earn next month, often leading to overspending in good months and struggling in lean ones.
