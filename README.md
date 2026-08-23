@@ -17,6 +17,7 @@ Traditional personal finance apps assume a fixed monthly salary. As a freelancer
 Nivela calculates "how much you can safely spend" based on your actual income history. Our algorithm converts the variability of your projects into a steady monthly amount, allowing you to plan without anxiety.
 
 ## Features (MVP)
+- [x] **Authentication** — Email/password login, signup, password reset, profile management.
 - [ ] **Income Tracking** — Detailed logging (date, amount, optional source).
 - [ ] **"Safe Salary" Calculation** — Algorithm based on configurable moving averages (e.g., last 6 months, or the worst month of the last 12).
 - [ ] **Automatic Tax Reserve** — Automatic set-aside of a % based on your country/regime.
