@@ -44,6 +44,10 @@ export default function LoginPage() {
             <a href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
               crear una cuenta
             </a>
+            {" "}o{" "}
+            <a href="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
+              ¿Olvidaste tu contraseña?
+            </a>
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
