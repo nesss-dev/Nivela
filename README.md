@@ -32,7 +32,11 @@ Nivela calculates "how much you can safely spend" based on your actual income hi
 ## Getting Started
 1. Clone the repository.
 2. Install dependencies: `npm install`
-3. Set up your environment variables (create your own `.env.local` with Supabase keys; do not share credentials in the repo).
+3. Set up your environment variables by copying the example:
+   ```bash
+   cp .example.env.local .env.local
+   ```
+   Then, fill in your Supabase keys (`NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`) in the new `.env.local` file. Do not commit this file to the repo.
 4. Start the development server: `npm run dev`
 
 ## Roadmap (V2)
