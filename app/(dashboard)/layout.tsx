@@ -22,6 +22,20 @@ export default async function DashboardLayout({
           <nav className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-gray-900">Nivela</h1>
             <div className="flex items-center space-x-4">
+              <nav className="flex items-center space-x-4">
+                <a
+                  href="/dashboard"
+                  className="text-sm text-gray-700 hover:text-gray-900"
+                >
+                  Dashboard
+                </a>
+                <a
+                  href="/profile"
+                  className="text-sm text-gray-700 hover:text-gray-900"
+                >
+                  Perfil
+                </a>
+              </nav>
               <span className="text-sm text-gray-700">{user.email}</span>
               <form action="/api/auth/signout" method="POST">
                 <button
