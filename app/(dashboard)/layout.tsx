@@ -30,6 +30,12 @@ export default async function DashboardLayout({
                   Dashboard
                 </a>
                 <a
+                  href="/incomes"
+                  className="text-sm text-gray-700 hover:text-gray-900"
+                >
+                  Ingresos
+                </a>
+                <a
                   href="/profile"
                   className="text-sm text-gray-700 hover:text-gray-900"
                 >
