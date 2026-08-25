@@ -2,11 +2,16 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/database.types";
+import { revalidatePath } from "next/cache";
 
 type IncomeInsert = Database["public"]["Tables"]["incomes"]["Insert"];
 type IncomeUpdate = Database["public"]["Tables"]["incomes"]["Update"];
 
-export async function createIncome(data: Omit<IncomeInsert, "user_id" | "id" | "created_at" | "updated_at">) {
+export async function createIncome(formData: FormData) {
+  const amount = parseFloat(formData.get("amount") as string);
+  const date = formData.get("date") as string;
+  const source = formData.get("source") as string;
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -14,20 +19,20 @@ export async function createIncome(data: Omit<IncomeInsert, "user_id" | "id" | "
     throw new Error("Usuario no autenticado");
   }
 
-  const { data: income, error } = await supabase
+  const { error } = await supabase
     .from("incomes")
     .insert({
-      ...data,
+      amount,
+      date,
+      source,
       user_id: user.id,
-    })
-    .select()
-    .single();
+    });
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return income;
+  revalidatePath("/incomes");
 }
 
 export async function getIncomes() {
@@ -69,7 +74,7 @@ export async function deleteIncome(id: string) {
     throw new Error(error.message);
   }
 
-  return { success: true };
+  revalidatePath("/incomes");
 }
 
 export async function updateIncome(id: string, data: IncomeUpdate) {
@@ -95,5 +100,6 @@ export async function updateIncome(id: string, data: IncomeUpdate) {
     throw new Error(error.message);
   }
 
+  revalidatePath("/incomes");
   return income;
 }

@@ -1,14 +1,9 @@
-import { getIncomes } from "@/app/incomes/actions";
+import { getIncomes, createIncome } from "@/app/incomes/actions";
 import { IncomeForm } from "@/components/IncomeForm";
 import { IncomeList } from "@/components/IncomeList";
-import { createIncome } from "@/app/incomes/actions";
 
 export default async function IncomesPage() {
   const incomes = await getIncomes();
-
-  async function handleCreateIncome(formData: { amount: number; date: string; source: string }) {
-    await createIncome(formData);
-  }
 
   return (
     <div className="space-y-8">
@@ -21,7 +16,7 @@ export default async function IncomesPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-1">
-          <IncomeForm onSubmit={handleCreateIncome} />
+          <IncomeForm action={createIncome} />
         </div>
         <div className="lg:col-span-2">
           <IncomeList initialIncomes={incomes} />

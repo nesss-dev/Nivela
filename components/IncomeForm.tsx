@@ -3,53 +3,49 @@
 import { useState } from "react";
 
 interface IncomeFormProps {
-  onSubmit: (data: { amount: number; date: string; source: string }) => Promise<void>;
+  action: (formData: FormData) => Promise<void>;
   isLoading?: boolean;
 }
 
-export function IncomeForm({ onSubmit, isLoading = false }: IncomeFormProps) {
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("");
-  const [source, setSource] = useState("");
+export function IncomeForm({ action, isLoading = false }: IncomeFormProps) {
   const [error, setError] = useState<string | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
   const today = new Date().toISOString().split("T")[0];
 
-  const validateForm = () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsPending(true);
+    setError(null);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const amount = formData.get("amount") as string;
+    const date = formData.get("date") as string;
+
     if (!amount || parseFloat(amount) <= 0) {
       setError("El monto debe ser mayor a 0");
-      return false;
+      setIsPending(false);
+      return;
     }
     if (!date) {
       setError("La fecha es obligatoria");
-      return false;
+      setIsPending(false);
+      return;
     }
     if (new Date(date) > new Date(today)) {
       setError("La fecha no puede ser futura");
-      return false;
+      setIsPending(false);
+      return;
     }
-    setError(null);
-    return true;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitError(null);
-
-    if (!validateForm()) return;
 
     try {
-      await onSubmit({
-        amount: parseFloat(amount),
-        date,
-        source: source.trim() || "",
-      });
-      setAmount("");
-      setDate(today);
-      setSource("");
+      await action(formData);
+      form.reset();
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Error al guardar el ingreso");
+      setError(err instanceof Error ? err.message : "Error al guardar el ingreso");
+    } finally {
+      setIsPending(false);
     }
   };
 
@@ -57,9 +53,9 @@ export function IncomeForm({ onSubmit, isLoading = false }: IncomeFormProps) {
     <div className="bg-white shadow rounded-lg p-6">
       <h3 className="text-lg font-medium text-gray-900 mb-4">Registrar ingreso</h3>
 
-      {submitError && (
+      {error && (
         <div className="mb-4 p-4 rounded-md bg-red-50 text-red-800 text-sm" role="alert">
-          {submitError}
+          {error}
         </div>
       )}
 
@@ -70,22 +66,15 @@ export function IncomeForm({ onSubmit, isLoading = false }: IncomeFormProps) {
           </label>
           <input
             id="amount"
+            name="amount"
             type="number"
             step="0.01"
             min="0.01"
             required
-            value={amount}
-            onChange={(e) => {
-              setAmount(e.target.value);
-              if (error) setError(null);
-            }}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              error ? "border-red-500" : "border-gray-300"
-            }`}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="0.00"
-            disabled={isLoading}
+            disabled={isPending || isLoading}
           />
-          {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
         </div>
 
         <div>
@@ -94,20 +83,14 @@ export function IncomeForm({ onSubmit, isLoading = false }: IncomeFormProps) {
           </label>
           <input
             id="date"
+            name="date"
             type="date"
             required
             max={today}
-            value={date || today}
-            onChange={(e) => {
-              setDate(e.target.value);
-              if (error) setError(null);
-            }}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              error ? "border-red-500" : "border-gray-300"
-            }`}
-            disabled={isLoading}
+            defaultValue={today}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            disabled={isPending || isLoading}
           />
-          {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
         </div>
 
         <div>
@@ -116,22 +99,21 @@ export function IncomeForm({ onSubmit, isLoading = false }: IncomeFormProps) {
           </label>
           <input
             id="source"
+            name="source"
             type="text"
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Ej. Cliente ACME, Proyecto web, etc."
-            disabled={isLoading}
+            disabled={isPending || isLoading}
             maxLength={100}
           />
         </div>
 
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isPending || isLoading}
           className="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? "Guardando..." : "Guardar ingreso"}
+          {isPending || isLoading ? "Guardando..." : "Guardar ingreso"}
         </button>
       </form>
     </div>
