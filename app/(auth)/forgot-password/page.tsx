@@ -27,7 +27,7 @@ export default function ForgotPasswordPage() {
 
     setMessage({
       type: "success",
-      text: "Si el email existe, recibirás un enlace para restablecer tu contraseña.",
+      text: "If the email exists, you&apos;ll receive a link to reset your password.",
     });
     setLoading(false);
   }
@@ -37,15 +37,15 @@ export default function ForgotPasswordPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            ¿Olvidaste tu contraseña?
+            Forgot Password?
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Introduce tu email y te enviaremos un enlace para restablecerla.
+            Enter your email and we&apos;ll send you a link to reset it.
           </p>
           <p className="mt-4 text-center text-sm text-gray-600">
-            ¿Recordaste la contraseña?{" "}
+            Remembered your password?{" "}
             <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
-              Inicia sesión
+              Sign in
             </Link>
           </p>
         </div>
@@ -83,7 +83,7 @@ export default function ForgotPasswordPage() {
               disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Enviando..." : "Enviar enlace de restablecimiento"}
+              {loading ? "Sending..." : "Send Reset Link"}
             </button>
           </div>
         </form>

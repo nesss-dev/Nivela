@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/database.types";
 import { revalidatePath } from "next/cache";
 
-type IncomeInsert = Database["public"]["Tables"]["incomes"]["Insert"];
 type IncomeUpdate = Database["public"]["Tables"]["incomes"]["Update"];
 
 export async function createIncome(formData: FormData) {

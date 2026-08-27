@@ -18,14 +18,14 @@ export function ResetPasswordForm() {
     const code = searchParams.get("code");
     const type = searchParams.get("type");
 
-    if (code && type === "recovery") {
-      setValidToken(true);
-    } else {
-      setMessage({
-        type: "error",
-        text: "Enlace inválido o expirado. Solicita uno nuevo.",
-      });
-    }
+    // Avoid synchronous setState in effect - use setTimeout
+    setTimeout(() => {
+      if (code && type === "recovery") {
+        setValidToken(true);
+      } else {
+        setValidToken(false);
+      }
+    }, 0);
   }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -34,13 +34,13 @@ export function ResetPasswordForm() {
     setMessage(null);
 
     if (newPassword !== confirmPassword) {
-      setMessage({ type: "error", text: "Las contraseñas no coinciden" });
+      setMessage({ type: "error", text: "Passwords do not match" });
       setLoading(false);
       return;
     }
 
     if (newPassword.length < 6) {
-      setMessage({ type: "error", text: "La contraseña debe tener al menos 6 caracteres" });
+      setMessage({ type: "error", text: "Password must be at least 6 characters" });
       setLoading(false);
       return;
     }
@@ -57,7 +57,7 @@ export function ResetPasswordForm() {
 
     setMessage({
       type: "success",
-      text: "Contraseña actualizada correctamente. Redirigiendo al login...",
+      text: "Password updated successfully. Redirecting to login...",
     });
 
     setTimeout(() => {
@@ -86,7 +86,7 @@ export function ResetPasswordForm() {
             href="/forgot-password"
             className="text-blue-600 hover:text-blue-500"
           >
-            Solicitar nuevo enlace
+            Request new link
           </a>
         </div>
       </div>
@@ -98,10 +98,10 @@ export function ResetPasswordForm() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Nueva contraseña
+            New Password
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Tu enlace es válido. Introduce tu nueva contraseña.
+            Your link is valid. Enter your new password.
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -118,7 +118,7 @@ export function ResetPasswordForm() {
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="newPassword" className="sr-only">
-                Nueva contraseña
+                New Password
               </label>
               <input
                 id="newPassword"
@@ -129,13 +129,13 @@ export function ResetPasswordForm() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Nueva contraseña"
+                placeholder="New Password"
                 minLength={6}
               />
             </div>
             <div>
               <label htmlFor="confirmPassword" className="sr-only">
-                Confirmar contraseña
+                Confirm Password
               </label>
               <input
                 id="confirmPassword"
@@ -146,7 +146,7 @@ export function ResetPasswordForm() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Confirmar contraseña"
+                placeholder="Confirm Password"
               />
             </div>
           </div>
@@ -157,7 +157,7 @@ export function ResetPasswordForm() {
               disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Actualizando..." : "Actualizar contraseña"}
+              {loading ? "Updating..." : "Update Password"}
             </button>
           </div>
         </form>

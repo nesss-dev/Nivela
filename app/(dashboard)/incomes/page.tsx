@@ -8,9 +8,9 @@ export default async function IncomesPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Mis ingresos</h2>
+        <h2 className="text-2xl font-bold text-gray-900">My Incomes</h2>
         <p className="mt-1 text-gray-600">
-          Registra tus ingresos para calcular tu sueldo seguro y el apartado de impuestos.
+          Record your income to calculate your safe salary and tax reserve.
         </p>
       </div>
 

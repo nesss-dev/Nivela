@@ -17,12 +17,6 @@ export function IncomeList({ initialIncomes = [], onIncomeChange }: IncomeListPr
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!initialIncomes.length) {
-      fetchIncomes();
-    }
-  }, [initialIncomes.length]);
-
   const fetchIncomes = async () => {
     try {
       setLoading(true);
@@ -30,7 +24,7 @@ export function IncomeList({ initialIncomes = [], onIncomeChange }: IncomeListPr
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        setError("Usuario no autenticado");
+        setError("User not authenticated");
         return;
       }
 
@@ -43,14 +37,44 @@ export function IncomeList({ initialIncomes = [], onIncomeChange }: IncomeListPr
       if (fetchError) throw fetchError;
       setIncomes(data || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al cargar ingresos");
+      setError(err instanceof Error ? err.message : "Error loading incomes");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!initialIncomes.length) {
+      fetchIncomes();
+    }
+  }, [initialIncomes.length]);
+    try {
+      setLoading(true);
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        setError("User not authenticated");
+        return;
+      }
+
+      const { data, error: fetchError } = await supabase
+        .from("incomes")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("date", { ascending: false });
+
+      if (fetchError) throw fetchError;
+      setIncomes(data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error loading incomes");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Estás seguro de que quieres eliminar este ingreso?")) return;
+    if (!confirm("Are you sure you want to delete this income?")) return;
 
     try {
       setDeletingId(id);
@@ -62,21 +86,21 @@ export function IncomeList({ initialIncomes = [], onIncomeChange }: IncomeListPr
       setIncomes((prev) => prev.filter((income) => income.id !== id));
       onIncomeChange?.();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Error al eliminar el ingreso");
+      alert(err instanceof Error ? err.message : "Error deleting income");
     } finally {
       setDeletingId(null);
     }
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("es-ES", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "EUR",
     }).format(amount);
   };
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("es-ES", {
+    return new Date(dateStr).toLocaleDateString("en-US", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -106,12 +130,12 @@ export function IncomeList({ initialIncomes = [], onIncomeChange }: IncomeListPr
   return (
     <div className="bg-white shadow rounded-lg">
       <div className="px-6 py-4 border-b border-gray-200">
-        <h3 className="text-lg font-medium text-gray-900">Mis ingresos</h3>
+        <h3 className="text-lg font-medium text-gray-900">My Incomes</h3>
       </div>
 
       {incomes.length === 0 ? (
         <div className="px-6 py-12 text-center">
-          <p className="text-gray-500">No hay ingresos registrados aún</p>
+          <p className="text-gray-500">No incomes recorded yet</p>
         </div>
       ) : (
         <div className="divide-y divide-gray-200">
@@ -138,7 +162,7 @@ export function IncomeList({ initialIncomes = [], onIncomeChange }: IncomeListPr
                 disabled={deletingId === income.id}
                 className="text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {deletingId === income.id ? "Eliminando..." : "Eliminar"}
+                {deletingId === income.id ? "Deleting..." : "Delete"}
               </button>
             </div>
           ))}

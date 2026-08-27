@@ -38,31 +38,31 @@ export default function DashboardPage() {
       <div>
         <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
         <p className="mt-1 text-gray-600">
-          Bienvenido, {user?.email}. Aquí verás tu resumen financiero.
+          Welcome, {user?.email}. Here is your financial summary.
         </p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
         <div className="bg-white overflow-hidden shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900">Sueldo Seguro</h3>
-          <p className="mt-2 text-3xl font-bold text-blue-600">€0,00</p>
+          <h3 className="text-lg font-medium text-gray-900">Safe Salary</h3>
+          <p className="mt-2 text-3xl font-bold text-blue-600">€0.00</p>
         </div>
         <div className="bg-white overflow-hidden shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900">Apartado Impuestos</h3>
-          <p className="mt-2 text-3xl font-bold text-yellow-600">€0,00</p>
+          <h3 className="text-lg font-medium text-gray-900">Tax Reserve</h3>
+          <p className="mt-2 text-3xl font-bold text-yellow-600">€0.00</p>
         </div>
         <div className="bg-white overflow-hidden shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900">Ingresos este mes</h3>
-          <p className="mt-2 text-3xl font-bold text-green-600">€0,00</p>
+          <h3 className="text-lg font-medium text-gray-900">Income this month</h3>
+          <p className="mt-2 text-3xl font-bold text-green-600">€0.00</p>
         </div>
       </div>
 
       <div className="bg-white shadow rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Próximos pasos</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Next Steps</h3>
         <ul className="space-y-2 text-gray-600">
-          <li>• Registra tus primeros ingresos</li>
-          <li>• Configura tu % de impuestos</li>
-          <li>• Define el período para el cálculo del sueldo seguro</li>
+          <li>• Record your first incomes</li>
+          <li>• Configure your tax percentage</li>
+          <li>• Define the period for safe salary calculation</li>
         </ul>
       </div>
     </div>

@@ -5,7 +5,6 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function ProfilePage() {
   const supabase = createClient();
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   // Email change state
@@ -33,7 +32,7 @@ export default function ProfilePage() {
       return;
     }
 
-    setMessage({ type: "success", text: "Email actualizado. Revisa tu bandeja de entrada para confirmar el nuevo email." });
+    setMessage({ type: "success", text: "Email updated. Check your inbox to confirm the new email." });
     setNewEmail("");
     setEmailLoading(false);
   }
@@ -44,13 +43,13 @@ export default function ProfilePage() {
     setMessage(null);
 
     if (newPassword !== confirmPassword) {
-      setMessage({ type: "error", text: "Las contraseñas no coinciden" });
+      setMessage({ type: "error", text: "Passwords do not match" });
       setPasswordLoading(false);
       return;
     }
 
     if (newPassword.length < 6) {
-      setMessage({ type: "error", text: "La contraseña debe tener al menos 6 caracteres" });
+      setMessage({ type: "error", text: "Password must be at least 6 characters" });
       setPasswordLoading(false);
       return;
     }
@@ -65,7 +64,7 @@ export default function ProfilePage() {
       return;
     }
 
-    setMessage({ type: "success", text: "Contraseña actualizada correctamente" });
+    setMessage({ type: "success", text: "Password updated successfully" });
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
@@ -75,8 +74,8 @@ export default function ProfilePage() {
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Perfil y seguridad</h2>
-        <p className="mt-1 text-gray-600">Gestiona tu email y contraseña</p>
+        <h2 className="text-2xl font-bold text-gray-900">Profile & Security</h2>
+        <p className="mt-1 text-gray-600">Manage your email and password</p>
       </div>
 
       {message && (
@@ -92,16 +91,16 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* Cambio de Email */}
+      {/* Change Email */}
       <div className="bg-white shadow rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Cambiar email</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Change Email</h3>
         <p className="text-sm text-gray-500 mb-4">
-          Se enviará un enlace de confirmación al nuevo email.
+          A confirmation link will be sent to the new email.
         </p>
         <form onSubmit={handleEmailChange} className="space-y-4">
           <div>
             <label htmlFor="newEmail" className="block text-sm font-medium text-gray-700 mb-1">
-              Nuevo email
+              New Email
             </label>
             <input
               id="newEmail"
@@ -111,7 +110,7 @@ export default function ProfilePage() {
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="nuevo@email.com"
+              placeholder="new@email.com"
             />
           </div>
           <button
@@ -119,18 +118,18 @@ export default function ProfilePage() {
             disabled={emailLoading || !newEmail}
             className="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {emailLoading ? "Actualizando..." : "Actualizar email"}
+            {emailLoading ? "Updating..." : "Update Email"}
           </button>
         </form>
       </div>
 
-      {/* Cambio de Contraseña */}
+      {/* Change Password */}
       <div className="bg-white shadow rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Cambiar contraseña</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Change Password</h3>
         <form onSubmit={handlePasswordChange} className="space-y-4">
           <div>
             <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
-              Contraseña actual
+              Current Password
             </label>
             <input
               id="currentPassword"
@@ -145,7 +144,7 @@ export default function ProfilePage() {
           </div>
           <div>
             <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-              Nueva contraseña
+              New Password
             </label>
             <input
               id="newPassword"
@@ -161,7 +160,7 @@ export default function ProfilePage() {
           </div>
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-              Confirmar nueva contraseña
+              Confirm New Password
             </label>
             <input
               id="confirmPassword"
@@ -179,7 +178,7 @@ export default function ProfilePage() {
             disabled={passwordLoading || !currentPassword || !newPassword || !confirmPassword}
             className="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {passwordLoading ? "Actualizando..." : "Actualizar contraseña"}
+            {passwordLoading ? "Updating..." : "Update Password"}
           </button>
         </form>
       </div>

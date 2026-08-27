@@ -33,13 +33,13 @@ export default async function DashboardLayout({
                   href="/incomes"
                   className="text-sm text-gray-700 hover:text-gray-900"
                 >
-                  Ingresos
+                  Incomes
                 </a>
                 <a
                   href="/profile"
                   className="text-sm text-gray-700 hover:text-gray-900"
                 >
-                  Perfil
+                  Profile
                 </a>
               </nav>
               <span className="text-sm text-gray-700">{user.email}</span>
@@ -48,7 +48,7 @@ export default async function DashboardLayout({
                   type="submit"
                   className="text-sm text-blue-600 hover:text-blue-500"
                 >
-                  Cerrar sesión
+                  Sign out
                 </button>
               </form>
             </div>
