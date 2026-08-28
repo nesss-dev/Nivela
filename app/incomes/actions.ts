@@ -1,10 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import type { Database } from "@/lib/database.types";
 import { revalidatePath } from "next/cache";
-
-type IncomeUpdate = Database["public"]["Tables"]["incomes"]["Update"];
 
 export async function createIncome(formData: FormData) {
   const amount = parseFloat(formData.get("amount") as string);
@@ -15,7 +12,7 @@ export async function createIncome(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Usuario no autenticado");
+    throw new Error("User not authenticated");
   }
 
   const { error } = await supabase
@@ -39,7 +36,7 @@ export async function getIncomes() {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Usuario no autenticado");
+    throw new Error("User not authenticated");
   }
 
   const { data, error } = await supabase
@@ -76,18 +73,25 @@ export async function deleteIncome(id: string) {
   revalidatePath("/incomes");
 }
 
-export async function updateIncome(id: string, data: IncomeUpdate) {
+export async function updateIncome(formData: FormData) {
+  const id = formData.get("id") as string;
+  const amount = parseFloat(formData.get("amount") as string);
+  const date = formData.get("date") as string;
+  const source = formData.get("source") as string;
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Usuario no autenticado");
+    throw new Error("User not authenticated");
   }
 
   const { data: income, error } = await supabase
     .from("incomes")
     .update({
-      ...data,
+      amount,
+      date,
+      source,
       updated_at: new Date().toISOString(),
     })
     .eq("id", id)

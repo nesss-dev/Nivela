@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/lib/database.types";
 
@@ -9,17 +9,23 @@ type Income = Database["public"]["Tables"]["incomes"]["Row"];
 interface IncomeListProps {
   initialIncomes?: Income[];
   onIncomeChange?: () => void;
+  onEdit?: (income: Income) => void;
 }
 
-export function IncomeList({ initialIncomes = [], onIncomeChange }: IncomeListProps) {
+const ITEMS_PER_PAGE = 20;
+
+export function IncomeList({ initialIncomes = [], onIncomeChange, onEdit }: IncomeListProps) {
   const [incomes, setIncomes] = useState<Income[]>(initialIncomes);
   const [loading, setLoading] = useState(!initialIncomes.length);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(initialIncomes.length >= ITEMS_PER_PAGE);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  const fetchIncomes = async () => {
+  const fetchIncomes = useCallback(async (pageNum: number = 1) => {
     try {
-      setLoading(true);
+      if (pageNum === 1) setLoading(true);
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
 
@@ -28,50 +34,62 @@ export function IncomeList({ initialIncomes = [], onIncomeChange }: IncomeListPr
         return;
       }
 
-      const { data, error: fetchError } = await supabase
+      const from = (pageNum - 1) * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
+      const { data, error: fetchError, count } = await supabase
         .from("incomes")
-        .select("*")
+        .select("*", { count: "exact" })
         .eq("user_id", user.id)
-        .order("date", { ascending: false });
+        .order("date", { ascending: false })
+        .range(from, to);
 
       if (fetchError) throw fetchError;
-      setIncomes(data || []);
+
+      if (pageNum === 1) {
+        setIncomes(data || []);
+      } else {
+        setIncomes((prev: Income[]) => [...prev, ...(data || [])]);
+      }
+
+      setHasMore((data?.length || 0) === ITEMS_PER_PAGE && (count ? from + data.length < count : false));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error loading incomes");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (!initialIncomes.length) {
-      fetchIncomes();
+      fetchIncomes(1);
+    } else {
+      setHasMore(initialIncomes.length >= ITEMS_PER_PAGE);
     }
-  }, [initialIncomes.length]);
-    try {
-      setLoading(true);
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+  }, [initialIncomes.length, fetchIncomes]);
 
-      if (!user) {
-        setError("User not authenticated");
-        return;
-      }
+  // Infinite scroll observer
+  useEffect(() => {
+    if (!loadMoreRef.current || loading || !hasMore) return;
 
-      const { data, error: fetchError } = await supabase
-        .from("incomes")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("date", { ascending: false });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading) {
+          setPage((prev: number) => prev + 1);
+        }
+      },
+      { threshold: 0.1, rootMargin: "100px" }
+    );
 
-      if (fetchError) throw fetchError;
-      setIncomes(data || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error loading incomes");
-    } finally {
-      setLoading(false);
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [loading, hasMore]);
+
+  useEffect(() => {
+    if (page > 1) {
+      fetchIncomes(page);
     }
-  };
+  }, [page, fetchIncomes]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this income?")) return;
@@ -83,7 +101,7 @@ export function IncomeList({ initialIncomes = [], onIncomeChange }: IncomeListPr
 
       if (deleteError) throw deleteError;
 
-      setIncomes((prev) => prev.filter((income) => income.id !== id));
+      setIncomes((prev: Income[]) => prev.filter((income) => income.id !== id));
       onIncomeChange?.();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Error deleting income");
@@ -107,7 +125,7 @@ export function IncomeList({ initialIncomes = [], onIncomeChange }: IncomeListPr
     });
   };
 
-  if (loading) {
+  if (loading && incomes.length === 0) {
     return (
       <div className="bg-white shadow rounded-lg p-6">
         <div className="flex items-center justify-center min-h-[200px]">
@@ -117,7 +135,7 @@ export function IncomeList({ initialIncomes = [], onIncomeChange }: IncomeListPr
     );
   }
 
-  if (error) {
+  if (error && incomes.length === 0) {
     return (
       <div className="bg-white shadow rounded-lg p-6">
         <div className="p-4 rounded-md bg-red-50 text-red-800 text-sm" role="alert">
@@ -157,15 +175,46 @@ export function IncomeList({ initialIncomes = [], onIncomeChange }: IncomeListPr
                 </div>
                 <p className="text-sm text-gray-500 mt-1">{formatDate(income.date)}</p>
               </div>
-              <button
-                onClick={() => handleDelete(income.id)}
-                disabled={deletingId === income.id}
-                className="text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {deletingId === income.id ? "Deleting..." : "Delete"}
-              </button>
+              <div className="flex items-center space-x-3">
+                {onEdit && (
+                  <button
+                    onClick={() => onEdit(income)}
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
+                    Edit
+                  </button>
+                )}
+                <button
+                  onClick={() => handleDelete(income.id)}
+                  disabled={deletingId === income.id}
+                  className="text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {deletingId === income.id ? "Deleting..." : "Delete"}
+                </button>
+              </div>
             </div>
           ))}
+
+          {/* Load more trigger */}
+          <div ref={loadMoreRef} className="px-6 py-4 text-center">
+            {hasMore && loading && (
+              <div className="flex items-center justify-center space-x-2 text-gray-500">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                <span>Loading more...</span>
+              </div>
+            )}
+            {hasMore && !loading && (
+              <button
+                onClick={() => setPage((prev: number) => prev + 1)}
+                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+              >
+                Load more
+              </button>
+            )}
+            {!hasMore && incomes.length > 0 && (
+              <p className="text-gray-500 text-sm">No more incomes</p>
+            )}
+          </div>
         </div>
       )}
     </div>
