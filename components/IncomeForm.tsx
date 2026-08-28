@@ -15,14 +15,9 @@ interface IncomeFormProps {
 export function IncomeForm({ action, initialData = null, onCancel, isLoading = false }: IncomeFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
 
+  const isEditing = !!initialData;
   const today = new Date().toISOString().split("T")[0];
-
-  // Detectar si estamos en modo edición
-  useEffect(() => {
-    setIsEditing(!!initialData);
-  }, [initialData]);
 
   // Pre-llenar el formulario cuando hay initialData
   useEffect(() => {

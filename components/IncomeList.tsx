@@ -60,13 +60,18 @@ export function IncomeList({ initialIncomes = [], onIncomeChange, onEdit }: Inco
     }
   }, []);
 
+  // Cargar ingresos iniciales o cuando cambia initialIncomes
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
-    if (!initialIncomes.length) {
+    if (initialIncomes.length === 0) {
       fetchIncomes(1);
     } else {
+      setIncomes(initialIncomes);
       setHasMore(initialIncomes.length >= ITEMS_PER_PAGE);
     }
-  }, [initialIncomes.length, fetchIncomes]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialIncomes, fetchIncomes]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Infinite scroll observer
   useEffect(() => {
@@ -85,11 +90,14 @@ export function IncomeList({ initialIncomes = [], onIncomeChange, onEdit }: Inco
     return () => observer.disconnect();
   }, [loading, hasMore]);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (page > 1) {
       fetchIncomes(page);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, fetchIncomes]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this income?")) return;

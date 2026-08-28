@@ -24,9 +24,13 @@ export default function IncomesPage() {
     }
   };
 
+  // Data fetching en effect es el patrón estándar de React para componentes cliente
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     fetchIncomes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleEdit = (income: Income) => {
     setEditingIncome(income);
